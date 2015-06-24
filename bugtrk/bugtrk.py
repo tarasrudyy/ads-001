@@ -33,16 +33,13 @@ def main():
     small_side = min(W, H)
     big_side = max(W, H)
 
-    elements_left = N
     while True:
         elements_in_row = (side - side % small_side) / small_side
         number_of_rows = (side - side % big_side) / big_side
-        elements_left -= elements_in_row * number_of_rows
-        if elements_left <= 0:
+        if elements_in_row * number_of_rows >= N:
             break
         else:
             side = min(small_side * (elements_in_row + 1), big_side * (number_of_rows + 1))
-            elements_left = N
 
     result = side
 
