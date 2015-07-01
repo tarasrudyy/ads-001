@@ -21,8 +21,6 @@ def main():
     # read data
     lines = read_file(input_file)
 
-    print lines
-
     result = 0
 
     # write data

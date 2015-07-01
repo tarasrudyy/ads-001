@@ -1,12 +1,9 @@
 def read_file(input_file):
     lines = []
-    lines.append(input_file)
     with open(input_file) as f:
         for line in f:
-            if ' ' in line:
-                lines.append(map(int, line.split(' ')))
-            else:
-                lines.append(int(line))
+            l = line.split()
+            lines.append(l[0])
     return lines
 
 def write_file(output_file, value):
@@ -15,8 +12,8 @@ def write_file(output_file, value):
 
 
 def main():
-    input_file = "lngpok.in"
-    output_file = "lngpok.out"
+    input_file = "wchain.in"
+    output_file = "wchain.out"
 
     # read data
     lines = read_file(input_file)
