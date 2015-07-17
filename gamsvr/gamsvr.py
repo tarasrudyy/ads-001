@@ -1,6 +1,6 @@
 def main():
-    input_file = "gamsrv.in"
-    output_file = "gamsrv.out"
+    input_file = "gamsvr.in"
+    output_file = "gamsvr.out"
 
     # read data
     lines = read_file(input_file)
