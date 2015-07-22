@@ -1,3 +1,5 @@
+import sys
+
 def main():
     input_file = "gamsvr.in"
     output_file = "gamsvr.out"
@@ -18,7 +20,7 @@ def main():
         routers = lines[2]
 
     min_max = [0] * N
-    result = 1e10
+    result = sys.maxint
 
     for client in clients:
         distances, shortest_path_predecessor = dijkstra(graph, graph.vertices[client - 1])
@@ -56,7 +58,7 @@ def read_file(input_file):
 
 def write_file(output_file, value):
     with open(output_file, 'w') as f:
-        f.write(str(value))
+        f.write(str.format('%.0f' % value))
 
 
 def init_graph(lines):
@@ -89,7 +91,7 @@ def init_graph(lines):
 def dijkstra(graph, start_vertex):
     # Initialization: setting all known shortest distances to infinity,
     # and the start vertex will have the shortest distance to itself equal to 0.
-    INFINITY = 1e10
+    INFINITY = sys.maxint
     distances = [INFINITY for _ in graph.vertices]
     shortest_path_predecessor = [None for _ in graph.vertices]
     distances[start_vertex.label] = 0
