@@ -58,7 +58,7 @@ def read_file(input_file):
 
 def write_file(output_file, value):
     with open(output_file, 'w') as f:
-        f.write(str.format('%.0f' % value))
+        f.write(str(value))
 
 
 def init_graph(lines):
