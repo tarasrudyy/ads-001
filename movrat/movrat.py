@@ -67,8 +67,7 @@ def main():
     # read data
     lines = read_file(input_file)
     n = lines[1]
-    data = []
-    data.append(lines[2])
+    data = lines[2] if type(lines[2]) == list else [lines[2]]
     low = lines[3]
     high = lines[4]
 
