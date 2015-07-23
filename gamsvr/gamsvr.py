@@ -1,8 +1,8 @@
 import sys
 
 def main():
-    input_file = "gamsvr.in"
-    output_file = "gamsvr.out"
+    input_file = "gamsvr.in" if len(sys.argv) == 1 else sys.argv[1]
+    output_file = "gamsvr.out" if len(sys.argv) == 1 else sys.argv[2]
 
     # read data
     lines = read_file(input_file)
@@ -13,7 +13,8 @@ def main():
     N = lines[1][0]
 
     clients = lines[2]
-    routers = list(set(_ for _ in range(1, N)) - set(clients))
+    routers = list(set(_ for _ in range(1, N + 1)) - set(clients))
+
     less_clients = len(clients) < len(routers)
     if not less_clients:
         clients = routers
