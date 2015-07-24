@@ -51,7 +51,7 @@ def huffman(data, codes):
 def compress(input_file, output_file):
     rates = defaultdict(int)
     calc_bytes_rate(input_file, rates)
-    codes = build_codes(rates);
+    codes = build_codes(rates)
     print codes
 
 def main():
