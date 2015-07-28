@@ -2,11 +2,8 @@ def read_file(input_file):
     lines = []
     lines.append(input_file)
     with open(input_file) as f:
-        for line in f:
-            if ' ' in line:
-                lines.append(map(int, line.split(' ')))
-            else:
-                lines.append(int(line))
+        lines.append(map(int, f.readline().split(' ')))
+        lines.append(int(f.readline()))
     return lines
 
 def write_file(output_file, value):
