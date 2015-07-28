@@ -17,14 +17,18 @@ def main():
     output_file = 'career.out'
 
     L, levels = read_file(input_file)
-    levels.reverse()
 
     solutions = levels[0]
     for i in range(1, L):
-        for j in range(0, L):
-            left = levels[i][j - 1] if 0 < j < L - i + 1 else 0
-            right = levels[i][j] if j < L - i else 0
-            solutions[j] = solutions[j] + max(left, right)
+        new_solutions = [0] * (i + 1)
+        for j in range(0, i):
+            left = solutions[j] + levels[i][j]
+            if new_solutions[j] < left:
+                new_solutions[j] = left
+            right = solutions[j] + levels[i][j + 1]
+            if new_solutions[j + 1] < right:
+                new_solutions[j + 1] = right
+        solutions = new_solutions
 
     result = max(solutions)
 
