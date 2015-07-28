@@ -11,7 +11,7 @@ def read_file(input_file):
 
 def write_file(output_file, value):
     with open(output_file, 'w') as f:
-        f.write(str(value))
+        f.write("%.2f" % value)
 
 
 def main():
@@ -21,7 +21,14 @@ def main():
     # read data
     lines = read_file(input_file)
 
-    result = 0
+    prices = sorted(lines[1])
+    prices.reverse()
+    discount = (100.0 - lines[2]) / 100
+    top_items_amount = len(prices) / 3
+    for i in range(0, top_items_amount):
+        prices[i] *= discount
+
+    result = sum(prices)
 
     # write data
     write_file(output_file, result)
