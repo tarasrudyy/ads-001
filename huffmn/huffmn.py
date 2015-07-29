@@ -8,7 +8,7 @@ from collections import defaultdict
 MB = 1048576
 
 def bytes_from_file(filename, chunksize=1 * MB):
-    with open(filename, 'r', 1 * MB) as f:
+    with open(filename, 'rb', 1 * MB) as f:
         while True:
             chunk = f.read(chunksize)
             if chunk:
@@ -84,9 +84,7 @@ def compress(input_file, output_file):
         print_progress(data_counter, data_size)
 
     # we have uncompleted byte
-    total_bits = calculate_total_bits(rates, codes)
-    extra_bits = total_bits % 8
-    if extra_bits > 0:
+    if len(code_string) < 8:
         buff.append(int(code_string.ljust(8, '0'), 2))
 
     if len(buff) > 0:
@@ -113,7 +111,7 @@ def decompress(input_file, output_file):
     codes, tree = build_codes(rates)
 
     total_bits = calculate_total_bits(rates, codes)
-    extra_bits = total_bits % 8
+    unused_bits = 8 - total_bits % 8
 
     # update data size for progress
     data_counter = 0
@@ -121,33 +119,32 @@ def decompress(input_file, output_file):
     print_progress(data_counter, data_size)
 
     # create empty file
-    file_out = open(output_file, 'w')
+    file_out = open(output_file, 'wb')
 
     # read encoded data
     bit_string = ''
-    bit_justify_by = 8
-    root = tree[0]
-    start = root
     while True:
         chunk1 = file_in.read(1 * MB)
         chunk2 = file_in.read(1 * MB)
         buff = bytearray(chunk1 + chunk2)
-        for i, byte in enumerate(buff):
-            # end of file - set extra bits justification
-            if chunk2 == '' and i + 1 == len(buff) and extra_bits > 0:
-                bit_justify_by = extra_bits
-            bit_string += bin(byte)[2:].rjust(bit_justify_by, '0')
-            for b in bit_string:
-                data_counter += 1
-                print_progress(data_counter, data_size)
-                root = root.left if b == '0' else root.right
+        bit_string += ''.join([bin(byte)[2:].rjust(8, '0') for byte in buff])
+        # end of file - remove unused bits
+        if chunk2 == '':
+            bit_string = bit_string[:-unused_bits]
 
-                if root.left is None and root.right is None:
-                    # found a leaf node, you found a symbol then
-                    file_out.write(root.item)
-                    code_len = len(codes[root.item])
-                    bit_string = bit_string[code_len:]
-                    root = start
+        root = tree[0]
+        for b in bit_string:
+            data_counter += 1
+            print_progress(data_counter, data_size)
+            root = root.left if b == '0' else root.right
+
+            if root.left is None and root.right is None:
+                # found a leaf node, you found a symbol then
+                file_out.write(root.item)
+                code_len = len(codes[root.item])
+                bit_string = bit_string[code_len:]
+                root = tree[0]
+
         # end of file
         if chunk2 == '':
             break
@@ -194,11 +191,11 @@ def main():
 
     seconds_elapsed = timer.timeit(1)
     print ""
-    print ""
-    print "Time elapsed: %d sec" % seconds_elapsed
+    print ("Time elapsed: %f sec" % seconds_elapsed)
     if command == 'compress':
         compression_ratio = (100.0 * os.path.getsize(output_file)) / os.path.getsize(input_file)
-        print "Compression ratio: %0.2f" % compression_ratio + "%"
+        if compression_ratio <= 100:
+            print "Compression ratio: %0.2f" % compression_ratio + "%"
 
 
 class Node(object):
