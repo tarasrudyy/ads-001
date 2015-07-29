@@ -7,17 +7,17 @@ from collections import defaultdict
 
 MB = 1048576
 
-def bytes_from_file(filename, chunksize=1 * MB):
+def bytes_from_file(filename):
     with open(filename, 'rb', 1 * MB) as f:
         while True:
-            chunk = f.read(chunksize)
+            chunk = f.read(1 * MB)
             if chunk:
                 for byte in chunk:
                     yield byte
             else:
                 break
 
-def calc_bytes_rate(filename, rates):
+def calculate_bytes_rate(filename, rates):
     for byte in bytes_from_file(filename):
         rates[byte] += 1
 
@@ -45,11 +45,11 @@ def build_codes(rates):
     code_it(codes, '', item_queue[0])
     return codes, item_queue
 
-def calculate_total_bits(rates, codes):
+def calculate_unused_bits(rates, codes):
     result = 0
     for c in rates:
         result += rates[c] * len(codes[c])
-    return result
+    return 8 - result % 8, result
 
 def compress(input_file, output_file):
     # init progress bar
@@ -58,7 +58,7 @@ def compress(input_file, output_file):
     print_progress(data_counter, data_size)
 
     rates = defaultdict(int)
-    calc_bytes_rate(input_file, rates)
+    calculate_bytes_rate(input_file, rates)
     codes, tree = build_codes(rates)
 
     # create empty file
@@ -96,7 +96,7 @@ def compress(input_file, output_file):
 
 def decompress(input_file, output_file):
     # read header
-    file_in = open(input_file, 'rb')
+    file_in = open(input_file, 'rb', 1 * MB)
 
     # 256 symbols, 4 bytes each
     header = file_in.read(1024)
@@ -110,8 +110,7 @@ def decompress(input_file, output_file):
     # build huffman tree
     codes, tree = build_codes(rates)
 
-    total_bits = calculate_total_bits(rates, codes)
-    unused_bits = 8 - total_bits % 8
+    unused_bits, total_bits = calculate_unused_bits(rates, codes)
 
     # update data size for progress
     data_counter = 0
@@ -124,9 +123,10 @@ def decompress(input_file, output_file):
     # read encoded data
     bit_string = ''
     while True:
-        chunk1 = file_in.read(1 * MB)
-        chunk2 = file_in.read(1 * MB)
+        chunk1 = file_in.read(512)
+        chunk2 = file_in.read(512)
         buff = bytearray(chunk1 + chunk2)
+
         bit_string += ''.join([bin(byte)[2:].rjust(8, '0') for byte in buff])
         # end of file - remove unused bits
         if chunk2 == '':
