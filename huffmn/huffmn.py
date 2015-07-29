@@ -93,11 +93,7 @@ def compress(input_file, output_file):
 
     print_progress(data_size, data_size)
 
-
 def decompress(input_file, output_file):
-    # init progress bar
-    print_progress(0, 100)
-
     # read header
     file_in = open(input_file, 'rb')
     # 256 symbols, 4 bytes each
@@ -143,14 +139,15 @@ def decompress(input_file, output_file):
 
     file_out.close()
 
-    print_progress(100, 100)
+    print_progress(data_size, data_size)
 
-def print_progress(val, end_val, bar_length=50):
-    percent = float(val) / end_val
-    hashes = '#' * int(round(percent * bar_length))
-    spaces = ' ' * (bar_length - len(hashes))
-    sys.stdout.write("\rProgress: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
-    sys.stdout.flush()
+def print_progress(val, end_val, bar_length=100):
+    if val % (end_val / 100) == 0:
+        percent = float(val) / end_val
+        hashes = '#' * int(round(percent * bar_length))
+        spaces = ' ' * (bar_length - len(hashes))
+        sys.stdout.write("\rProgress: [{0}] {1}%".format(hashes + spaces, int(round(percent * 100))))
+        sys.stdout.flush()
 
 def print_help():
     print "Huffman compression script"
