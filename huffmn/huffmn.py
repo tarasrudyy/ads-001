@@ -175,8 +175,7 @@ def main():
         if command == 'compress':
             timer = timeit.Timer(lambda: compress(input_file, output_file))
         elif command == 'decompress':
-            decompress(input_file, output_file)
-            timer = timeit.Timer(lambda: uncompress(input_file, output_file))
+            timer = timeit.Timer(lambda: decompress(input_file, output_file))
     else:
         print_help()
 
