@@ -145,9 +145,9 @@ def decompress(input_file, output_file):
                 if root.left is None and root.right is None:
                     # found a leaf node, you found a symbol then
                     file_out.write(root.item)
-                    root = start
                     code_len = len(codes[root.item])
-                    bit_string = bit_string[:code_len]
+                    bit_string = bit_string[code_len:]
+                    root = start
         # end of file
         if chunk2 == '':
             break
